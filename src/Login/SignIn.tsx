@@ -1,6 +1,5 @@
 import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import { Field, FormikProvider, useFormik } from "formik";
-import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { postSignInData } from "../api-services/auth";
 import { SignInProps } from "./../api-services/types"; // Update the path accordingly
@@ -27,6 +26,7 @@ const SignIn = () => {
       try {
         console.log(formik.values);
         await postSignInData(formik.values as SignInProps);
+        formik.handleReset(null)
       } catch (error) {
         console.error(error.message);
       }

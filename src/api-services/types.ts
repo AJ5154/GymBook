@@ -33,5 +33,6 @@ enum PrefixEnum {
     middleName?: string;
   }
   
-  export { SignInProps, SignUpProps, PrefixEnum, GenderEnum };
+export { PrefixEnum, GenderEnum };
+    export type { SignInProps, SignUpProps };
   
