@@ -2,7 +2,7 @@ import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import { Field, FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
 import { postSignInData } from "../api-services/auth";
-import { SignInProps } from "./../api-services/types"; // Update the path accordingly
+import { SignInProps } from "./../api-services/types"; 
 
 interface IFieldProps {
   field: { value: string };
@@ -27,8 +27,12 @@ const SignIn = () => {
         console.log(formik.values);
         await postSignInData(formik.values as SignInProps);
         formik.handleReset(null)
-      } catch (error) {
-        console.error(error.message);
+      }catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error("An unknown error occurred");
+        }
       }
     },
   });
@@ -95,7 +99,6 @@ const SignIn = () => {
             sx={{ fontSize: "15px", mt: 3 }}
             variant="h6"
           >
-            {/* Create a new account? <Link to="/signup">Sign up</Link> */}
           </Typography>
         </FormikProvider>
       </Paper>
