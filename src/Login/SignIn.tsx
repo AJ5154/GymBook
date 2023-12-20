@@ -1,24 +1,18 @@
 import { Button, Container, Paper, TextField, Typography } from "@mui/material";
-import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
-interface SignInProps {
-  email: string;
-  password: string;
-}
-
-interface NewType {
-  value: string;
-}
+import { postSignInData } from "../api-services/auth";
+import { SignInProps } from "./../api-services/types"; // Update the path accordingly
 
 interface IFieldProps {
-  field: NewType;
+  field: { value: string };
   meta: {
     touched: boolean;
     error: string;
   };
 }
+
 const SignIn = () => {
   const formik = useFormik({
     initialValues: {
@@ -30,27 +24,14 @@ const SignIn = () => {
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: async () => {
-        try {
-          console.log(formik.values);
-          await postSignInData(formik.values);
-        } catch (error) {
-          console.error(error.message);
-        }
+      try {
+        console.log(formik.values);
+        await postSignInData(formik.values as SignInProps);
+      } catch (error) {
+        console.error(error.message);
+      }
     },
   });
-
-  const postSignInData = async (data: SignInProps) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:7575/api/v1/auth/login",
-        data
-      );
-      return response.data;
-    } catch (error: any) {
-      console.error(error.message);
-      return [];
-    }
-  };
   return (
     <Container component="form" maxWidth="sm">
       <Typography component="h1" variant="h3" align="center">

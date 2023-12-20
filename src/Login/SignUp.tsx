@@ -9,110 +9,70 @@ import {
     Select,
     TextField,
     Typography,
-} from "@mui/material";
-import axios from "axios";
-import { Field, FormikProvider, useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
-import * as Yup from "yup";
-enum PrefixEnum {
-  MR = "MR",
-  MRS = "MRS",
-  MISS = "MISS",
-}
-enum GenderEnum {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  OTHER = "OTHER",
-  UNSPECIFIED = "UNSPECIFIED",
-}
-interface SignUpProps {
-  prefix: PrefixEnum.MR | PrefixEnum.MRS | PrefixEnum.MISS;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  gender:
-    | GenderEnum.MALE
-    | GenderEnum.FEMALE
-    | GenderEnum.OTHER
-    | GenderEnum.UNSPECIFIED;
-  password: string;
-  dateOfBirth: string;
-  middleName?: string;
-}
-interface NewType {
-  value: string;
-}
-
-interface IFieldProps {
-  field: NewType;
-  meta: {
-    touched: boolean;
-    error: string;
-  };
-}
-const SignUp = () => {
-const navigate = useNavigate();
-  const formik = useFormik({
-    initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      password: "",
-      dateOfBirth: "",
-      middleName: "",
-      gender: GenderEnum.UNSPECIFIED,
-      prefix: PrefixEnum.MR,
-    },
-    validationSchema: Yup.object().shape({
-      firstName: Yup.string().required("First Name is required"),
-      middleName: Yup.string().required("Middle Name is required"),
-      lastName: Yup.string().required("Last Name is required"),
-      email: Yup.string().email("Invalid Email").required("Email is required"),
-      phone: Yup.string().required("Phone is required"),
-      password: Yup.string().required("Password is required"),
-      prefix: Yup.string().oneOf(
-        [PrefixEnum.MR, PrefixEnum.MRS, PrefixEnum.MISS],
-        "Invalid prefix"
-      ),
-      gender: Yup.string()
-        .oneOf(
-          [
-            GenderEnum.MALE,
-            GenderEnum.FEMALE,
-            GenderEnum.OTHER,
-            GenderEnum.UNSPECIFIED,
-          ],
-          "Invalid gender"
-        )
-        .required("Gender is required"),
-      dateOfBirth: Yup.date().required("Date of Birth is required"),
-    }),
-    onSubmit: async () => {
-      try {
-        console.log(formik.values);
-        await postSignupData(formik.values);
-        navigate("/");
-      } catch (error) {
-        console.error(error.message);
-      }
-    },
-  });
-
-  const postSignupData = async (data: SignUpProps) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:7575/api/v1/auth/signup",
-        data
-      );
-      return response.data;
-    } catch (error: any) {
-      console.error(error.message);
-      return [];
-    }
-  };
-
+  } from "@mui/material";
+  import { Field, FormikProvider, useFormik } from "formik";
+  import { Link, useNavigate } from "react-router-dom";
+  import * as Yup from "yup";
+  import { postSignupData } from "../api-services/auth";
+import { GenderEnum, PrefixEnum, SignUpProps } from "../api-services/types";
+  
+  interface IFieldProps {
+    field: { value: string };
+    meta: {
+      touched: boolean;
+      error: string;
+    };
+  }
+  
+  const SignUp = () => {
+    const navigate = useNavigate();
+  
+    const formik = useFormik({
+      initialValues: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        password: "",
+        dateOfBirth: "",
+        middleName: "",
+        gender: GenderEnum.UNSPECIFIED,
+        prefix: PrefixEnum.MR,
+      },
+      validationSchema: Yup.object().shape({
+        firstName: Yup.string().required("First Name is required"),
+        middleName: Yup.string().required("Middle Name is required"),
+        lastName: Yup.string().required("Last Name is required"),
+        email: Yup.string().email("Invalid Email").required("Email is required"),
+        phone: Yup.string().required("Phone is required"),
+        password: Yup.string().required("Password is required"),
+        prefix: Yup.string().oneOf(
+          [PrefixEnum.MR, PrefixEnum.MRS, PrefixEnum.MISS],
+          "Invalid prefix"
+        ),
+        gender: Yup.string()
+          .oneOf(
+            [
+              GenderEnum.MALE,
+              GenderEnum.FEMALE,
+              GenderEnum.OTHER,
+              GenderEnum.UNSPECIFIED,
+            ],
+            "Invalid gender"
+          )
+          .required("Gender is required"),
+        dateOfBirth: Yup.date().required("Date of Birth is required"),
+      }),
+      onSubmit: async () => {
+        try {
+          console.log(formik.values);
+          await postSignupData(formik.values as SignUpProps); 
+          navigate("/");
+        } catch (error) {
+          console.error(error.message);
+        }
+      },
+    });
   return (
     <Container component="form" maxWidth="sm">
       <Typography component="h1" variant="h3" align="center">
