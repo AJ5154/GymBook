@@ -1,5 +1,6 @@
 
 import axios from "axios";
+import { SignInProps, SignUpProps } from "./types";
 
 export const postSignInData = async (data: SignInProps) => {
   try {
