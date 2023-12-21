@@ -1,20 +1,24 @@
 import {
-    Button,
-    Container,
-    FormControl,
-    FormHelperText,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    TextField,
-    Typography,
+  Button,
+  Container,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { Field, FormikProvider, useFormik } from "formik";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { postSignupData } from "../api-services/auth";
-import { GenderEnum, PrefixEnum, SignUpProps } from "../api-services/types";
-import { Link } from "react-router-dom";
+import {
+  GenderEnum,
+  PrefixEnum,
+  SignUpProps,
+} from "../api-services/auth.types";
 
 interface IFieldProps {
   field: { value: string };
@@ -25,7 +29,6 @@ interface IFieldProps {
 }
 
 const SignUp = () => {
-
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -63,16 +66,16 @@ const SignUp = () => {
       dateOfBirth: Yup.date().required("Date of Birth is required"),
     }),
     onSubmit: async () => {
-        try {
-          console.log(formik.values);
-          await postSignupData(formik.values as SignUpProps);
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            console.error(error.message);
-          } else {
-            console.error("An unknown error occurred");
-          }
+      try {
+        console.log(formik.values);
+        await postSignupData(formik.values as SignUpProps);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error("An unknown error occurred");
         }
+      }
     },
   });
   return (

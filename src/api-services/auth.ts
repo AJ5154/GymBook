@@ -1,7 +1,7 @@
 import axios from "axios";
-import { SignInProps, SignUpProps } from "./types";
-import { LoginApiResponse } from "../Login/SignIn.type";
+import { SignInApiResponse } from "../Login/SignIn.type";
 import { APIErrorResponse } from "../common/types/APIErrorResponse.type";
+import { SignInProps, SignUpProps } from "./auth.types";
 
 export const postSignInData = async (data: SignInProps) => {
   try {
@@ -21,13 +21,13 @@ export const postSignInData = async (data: SignInProps) => {
 
 export const postSignupData = async (
   data: SignUpProps
-): Promise<LoginApiResponse | void> => {
+): Promise<SignInApiResponse | void> => {
   try {
     const response = await axios.post(
       "http://localhost:7575/api/v1/auth/signup",
       data
     );
-    const apiData = response.data as LoginApiResponse;
+    const apiData = response.data as SignInApiResponse;
     return apiData;
   } catch (error: unknown) {
     if (error instanceof APIErrorResponse) {

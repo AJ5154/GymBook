@@ -14,12 +14,9 @@ import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
-import Navbar from "../Navbar";
 import { APIErrorResponse } from "../../common/types/APIErrorResponse.type";
-import {
-  getLocalStorage,
-  LocalStorageKey,
-} from "../../common/utilities/locakStorage";
+import { AppStorage } from "../../common/utilities/locakStorage";
+import Navbar from "../Navbar";
 
 const style = {
   position: "absolute" as const,
@@ -65,7 +62,7 @@ const Batch = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const GymId = getLocalStorage(LocalStorageKey.GymId);
+  const GymId = AppStorage.getGymId();
   const [gymBatchData, setGymBatchData] = useState<{ data: GymBatchProps[] }>({
     data: [],
   });
@@ -75,6 +72,7 @@ const Batch = () => {
       batchLimit: 1,
       startTime: "",
       endTime: "",
+      id: "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Batch Name is required"),
@@ -94,8 +92,8 @@ const Batch = () => {
       const convertedEndTime = convertTimeToHourMinuteFormat(
         formik.values.endTime
       );
-      const token = getLocalStorage(LocalStorageKey.AccessToken);
-      const { id, startTime, endTime, ...restFormikValues } = formik.values;
+      const token = AppStorage.getAccessToken();
+      const { id, ...restFormikValues } = formik.values;
       try {
         if (id) {
           await axios.put(
@@ -141,7 +139,7 @@ const Batch = () => {
 
   const getGymBatchData = async () => {
     try {
-      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      const token = AppStorage.getAccessToken();
       const response = await axios.get(
         `http://localhost:7575/api/v1/gyms/${GymId}/batches`,
         {
@@ -175,7 +173,7 @@ const Batch = () => {
 
   const deleteGymBatchData = async (batchId: string) => {
     try {
-      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      const token = AppStorage.getAccessToken();
       await axios.delete(
         `http://localhost:7575/api/v1/gyms/${GymId}/batches/${batchId}`,
         {

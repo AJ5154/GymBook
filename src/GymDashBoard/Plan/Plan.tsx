@@ -17,12 +17,12 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
-
-import Navbar from "../Navbar";
+import { createPlan } from "../../api-services/plan";
 import { APIErrorResponse } from "../../common/types/APIErrorResponse.type";
-import { getLocalStorage, LocalStorageKey } from "../../common/utilities/locakStorage";
+import { AppStorage } from "../../common/utilities/locakStorage";
+import Navbar from "../Navbar";
 
 const style = {
   position: "absolute" as const,
@@ -36,20 +36,18 @@ const style = {
   p: 4,
 };
 
-interface gymPlanProps {
-  durationInMoths: ReactNode;
+interface GymPlanProps {
+  durationInMoths: number;
   name: string;
   price: number;
   durationInMonths: number;
   id: string;
 }
 
-interface NewType {
-  value: string;
-}
-
 interface IFieldProps {
-  field: NewType;
+  field: {
+    value: string;
+  };
   meta: {
     touched: boolean;
     error: string;
@@ -57,13 +55,13 @@ interface IFieldProps {
 }
 
 const Plan = () => {
-  const [gymplanData, setGymPlanData] = useState<{ data: gymPlanProps[] }>({
+  const [gymplanData, setGymPlanData] = useState<{ data: GymPlanProps[] }>({
     data: [],
   });
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const GymId = getLocalStorage(LocalStorageKey.GymId);
+  const GymId = AppStorage.getGymId();
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -78,10 +76,8 @@ const Plan = () => {
     }),
     onSubmit: async () => {
       console.log(formik.values.id);
-      const token = getLocalStorage(LocalStorageKey.AccessToken);
-      const { id, createdAt, updatedAt, deleted, gymId, ...restFormikValues } =
-        formik.values;
-
+      const token = AppStorage.getAccessToken();
+      const { id, ...restFormikValues } = formik.values;
       try {
         if (id) {
           await axios.put(
@@ -94,15 +90,8 @@ const Plan = () => {
             }
           );
         } else {
-          await axios.post(
-            `http://localhost:7575/api/v1/gyms/${GymId}/plans`,
-            { ...restFormikValues },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const createParams = { ...restFormikValues };
+          await createPlan(createParams);
         }
         loadGymPlanData();
         formik.handleReset(null);
@@ -112,14 +101,14 @@ const Plan = () => {
     },
   });
 
-  const editGymPlanData = (data: gymPlanProps) => {
+  const editGymPlanData = (data: GymPlanProps) => {
     handleOpen();
     formik.setValues(data);
   };
 
   const deleteGymPlanData = async (planId: string) => {
     try {
-      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      const token = AppStorage.getAccessToken();
       await axios.delete(
         `http://localhost:7575/api/v1/gyms/${GymId}/plans/${planId}`,
         {
@@ -142,7 +131,7 @@ const Plan = () => {
 
   const getGymPlanData = async () => {
     try {
-      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      const token = AppStorage.getAccessToken();
       const response = await axios.get(
         `http://localhost:7575/api/v1/gyms/${GymId}/plans`,
         {
