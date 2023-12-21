@@ -15,13 +15,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
-import { createPlan } from "../../api-services/plan";
+import {
+  createPlan,
+  deletePlan,
+  getPlan,
+  updatePlan,
+} from "../../api-services/plan";
 import { APIErrorResponse } from "../../common/types/APIErrorResponse.type";
-import { AppStorage } from "../../common/utilities/locakStorage";
 import Navbar from "../Navbar";
 
 const style = {
@@ -61,7 +64,6 @@ const Plan = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const GymId = AppStorage.getGymId();
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -76,19 +78,11 @@ const Plan = () => {
     }),
     onSubmit: async () => {
       console.log(formik.values.id);
-      const token = AppStorage.getAccessToken();
       const { id, ...restFormikValues } = formik.values;
       try {
         if (id) {
-          await axios.put(
-            `http://localhost:7575/api/v1/gyms/${GymId}/plans/${id}`,
-            { ...restFormikValues },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const updateParams = { ...restFormikValues };
+          await updatePlan(id, updateParams);
         } else {
           const createParams = { ...restFormikValues };
           await createPlan(createParams);
@@ -108,16 +102,7 @@ const Plan = () => {
 
   const deleteGymPlanData = async (planId: string) => {
     try {
-      const token = AppStorage.getAccessToken();
-      await axios.delete(
-        `http://localhost:7575/api/v1/gyms/${GymId}/plans/${planId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      await deletePlan(planId);
       const updatedPlans = gymplanData.data.filter(
         (plan: { id: string }) => plan.id !== planId
       );
@@ -131,15 +116,7 @@ const Plan = () => {
 
   const getGymPlanData = async () => {
     try {
-      const token = AppStorage.getAccessToken();
-      const response = await axios.get(
-        `http://localhost:7575/api/v1/gyms/${GymId}/plans`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await getPlan();
       return response.data;
     } catch (error: unknown) {
       if (error instanceof APIErrorResponse) {
