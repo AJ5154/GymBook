@@ -36,7 +36,7 @@ const SignIn = () => {
         const jwtToken = SignInResponse.data.entity.token.accessToken;
         AppStorage.setAccessToken(jwtToken);
         formik.handleReset(null);
-        navigate("/dashboard");
+        navigate("/creategym");
       } catch (error: unknown) {
         if (error instanceof APIErrorResponse) {
           console.error(error.message);
