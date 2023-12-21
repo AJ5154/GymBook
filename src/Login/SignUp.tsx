@@ -9,70 +9,72 @@ import {
     Select,
     TextField,
     Typography,
-  } from "@mui/material";
-  import { Field, FormikProvider, useFormik } from "formik";
-  import { Link, useNavigate } from "react-router-dom";
-  import * as Yup from "yup";
-  import { postSignupData } from "../api-services/auth";
+} from "@mui/material";
+import { Field, FormikProvider, useFormik } from "formik";
+import * as Yup from "yup";
+import { postSignupData } from "../api-services/auth";
 import { GenderEnum, PrefixEnum, SignUpProps } from "../api-services/types";
-  
-  interface IFieldProps {
-    field: { value: string };
-    meta: {
-      touched: boolean;
-      error: string;
-    };
-  }
-  
-  const SignUp = () => {
-    const navigate = useNavigate();
-  
-    const formik = useFormik({
-      initialValues: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        password: "",
-        dateOfBirth: "",
-        middleName: "",
-        gender: GenderEnum.UNSPECIFIED,
-        prefix: PrefixEnum.MR,
-      },
-      validationSchema: Yup.object().shape({
-        firstName: Yup.string().required("First Name is required"),
-        middleName: Yup.string().required("Middle Name is required"),
-        lastName: Yup.string().required("Last Name is required"),
-        email: Yup.string().email("Invalid Email").required("Email is required"),
-        phone: Yup.string().required("Phone is required"),
-        password: Yup.string().required("Password is required"),
-        prefix: Yup.string().oneOf(
-          [PrefixEnum.MR, PrefixEnum.MRS, PrefixEnum.MISS],
-          "Invalid prefix"
-        ),
-        gender: Yup.string()
-          .oneOf(
-            [
-              GenderEnum.MALE,
-              GenderEnum.FEMALE,
-              GenderEnum.OTHER,
-              GenderEnum.UNSPECIFIED,
-            ],
-            "Invalid gender"
-          )
-          .required("Gender is required"),
-        dateOfBirth: Yup.date().required("Date of Birth is required"),
-      }),
-      onSubmit: async () => {
+import { Link } from "react-router-dom";
+
+interface IFieldProps {
+  field: { value: string };
+  meta: {
+    touched: boolean;
+    error: string;
+  };
+}
+
+const SignUp = () => {
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      dateOfBirth: "",
+      middleName: "",
+      gender: GenderEnum.UNSPECIFIED,
+      prefix: PrefixEnum.MR,
+    },
+    validationSchema: Yup.object().shape({
+      firstName: Yup.string().required("First Name is required"),
+      middleName: Yup.string().required("Middle Name is required"),
+      lastName: Yup.string().required("Last Name is required"),
+      email: Yup.string().email("Invalid Email").required("Email is required"),
+      phone: Yup.string().required("Phone is required"),
+      password: Yup.string().required("Password is required"),
+      prefix: Yup.string().oneOf(
+        [PrefixEnum.MR, PrefixEnum.MRS, PrefixEnum.MISS],
+        "Invalid prefix"
+      ),
+      gender: Yup.string()
+        .oneOf(
+          [
+            GenderEnum.MALE,
+            GenderEnum.FEMALE,
+            GenderEnum.OTHER,
+            GenderEnum.UNSPECIFIED,
+          ],
+          "Invalid gender"
+        )
+        .required("Gender is required"),
+      dateOfBirth: Yup.date().required("Date of Birth is required"),
+    }),
+    onSubmit: async () => {
         try {
           console.log(formik.values);
-          await postSignupData(formik.values as SignUpProps); 
-          navigate("/");
-        } catch (error) {
-          console.error(error.message);
+          await postSignupData(formik.values as SignUpProps);
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error(error.message);
+          } else {
+            console.error("An unknown error occurred");
+          }
         }
-      },
-    });
+    },
+  });
   return (
     <Container component="form" maxWidth="sm">
       <Typography component="h1" variant="h3" align="center">
