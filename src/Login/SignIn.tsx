@@ -1,8 +1,12 @@
 import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import { Field, FormikProvider, useFormik } from "formik";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { postSignInData } from "../api-services/auth";
-import { SignInProps } from "./../api-services/types"; 
+import { SignInProps } from "./../api-services/types";
+import { SignInApiResponse } from "./SignIn.type";
+import { setLocalStorage, LocalStorageKey } from "../common/utilities/locakStorage";
+import { APIErrorResponse } from "../common/types/APIErrorResponse.type";
 
 interface IFieldProps {
   field: { value: string };
@@ -13,6 +17,7 @@ interface IFieldProps {
 }
 
 const SignIn = () => {
+  const navigate =useNavigate()
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -25,10 +30,13 @@ const SignIn = () => {
     onSubmit: async () => {
       try {
         console.log(formik.values);
-        await postSignInData(formik.values as SignInProps);
+        const SignInResponse = (await postSignInData(formik.values as SignInProps)) as SignInApiResponse;
+        const jwtToken = SignInResponse.data.entity.token.accessToken;
+        setLocalStorage(LocalStorageKey.AccessToken, jwtToken);
         formik.handleReset(null)
+        navigate("/dashboard")
       }catch (error: unknown) {
-        if (error instanceof Error) {
+        if (error instanceof APIErrorResponse) {
           console.error(error.message);
         } else {
           console.error("An unknown error occurred");
@@ -99,6 +107,7 @@ const SignIn = () => {
             sx={{ fontSize: "15px", mt: 3 }}
             variant="h6"
           >
+            Create a new account? <Link to="/signup">Sign up</Link>
           </Typography>
         </FormikProvider>
       </Paper>

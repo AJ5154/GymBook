@@ -14,6 +14,7 @@ import { Field, FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
 import { postSignupData } from "../api-services/auth";
 import { GenderEnum, PrefixEnum, SignUpProps } from "../api-services/types";
+import { Link } from "react-router-dom";
 
 interface IFieldProps {
   field: { value: string };
@@ -249,7 +250,7 @@ const SignUp = () => {
             sx={{ fontSize: "15px", mt: 3 }}
             variant="h6"
           >
-            {/* Already have an account? <Link to="/">Log In</Link> */}
+            Already have an account? <Link to="/">Log In</Link>
           </Typography>
         </FormikProvider>
       </Paper>
