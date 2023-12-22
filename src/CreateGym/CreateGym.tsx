@@ -34,12 +34,9 @@ const CreateGym = () => {
       const newGymData = { ...formik.values };
       const response = await createNewGym(newGymData);
       console.log("Response Data:", response.data);
-
       const gymId = response.data.data.id;
       console.log(gymId);
-
       localStorage.setItem("GymId", gymId);
-
       loadGymData();
       navigate("/dashboard");
       formik.handleReset(null);
