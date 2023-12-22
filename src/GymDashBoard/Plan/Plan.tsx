@@ -78,7 +78,7 @@ const Plan = () => {
     }),
     onSubmit: async () => {
       console.log(formik.values.id);
-      const { id, ...restFormikValues } = formik.values;
+      const { id,createdAt, updatedAt, deleted,gymId, ...restFormikValues } = formik.values;
       try {
         if (id) {
           const updateParams = { ...restFormikValues };

@@ -231,7 +231,7 @@ const Batch = () => {
                     label="Batch Open Time"
                     variant="standard"
                     fullWidth
-                    type="text"
+                    type="time"
                     inputMode="numeric"
                     sx={{ mx: "auto" }}
                     error={meta.touched && meta.error ? true : false}
@@ -246,7 +246,7 @@ const Batch = () => {
                     label="Batch Close Time"
                     variant="standard"
                     fullWidth
-                    type="text"
+                    type="time"
                     inputMode="numeric"
                     sx={{ mx: "auto" }}
                     error={meta.touched && meta.error ? true : false}
