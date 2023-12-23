@@ -37,7 +37,7 @@ const Member = () => {
               sx={{ mr: 4 }}
               onClick={navigateNextPage}
             >
-              <People /> Add Plan
+              <People /> Add Members
             </Button>
           </Grid>
         </Grid>
