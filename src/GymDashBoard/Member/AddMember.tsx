@@ -17,9 +17,16 @@ import {
   Typography,
 } from "@mui/material";
 import { Field, FormikProvider, useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
+import {
+  createMember,
+  deleteMember,
+  getMember,
+  updateMember,
+} from "../../api-services/member";
+import { APIErrorResponse } from "../../common/types/APIErrorResponse.type";
 import Navbar from "../Navbar";
 
 interface MembersProps {
@@ -41,6 +48,7 @@ interface MembersProps {
   dob: string;
   address: string;
   notes: string;
+  id: string;
 }
 
 interface IFieldProps {
@@ -57,8 +65,10 @@ const steps = ["Basic Detail", "Plan Detail", "Personal Details"];
 
 const AddMember = () => {
   const [activeStep, setActiveStep] = useState(0);
-
-  const formik = useFormik<MembersProps>({
+  const [memberDetails, setMemberDetails] = useState<{ data: MembersProps[] }>({
+    data: [],
+  });
+  const formik = useFormik({
     initialValues: {
       firstName: "",
       lastName: "",
@@ -78,6 +88,7 @@ const AddMember = () => {
       dob: "",
       address: "",
       notes: "",
+      id: "",
     },
     validationSchema: Yup.object().shape({
       firstName: Yup.string().required("First Name is required"),
@@ -118,6 +129,26 @@ const AddMember = () => {
     setActiveStep(0);
   };
 
+  const getMembersData = async () => {
+    try {
+      const response = await getMember();
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof APIErrorResponse) {
+        console.error(error.message);
+      }
+      return [];
+    }
+  };
+
+  const loadMemberData = async () => {
+    const loadData = await getMembersData();
+    setMemberDetails(loadData);
+  };
+
+  useEffect(() => {
+    loadMemberData();
+  }, []);
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
@@ -481,8 +512,39 @@ const AddMember = () => {
     handleNext();
   };
 
-  const handlePlaceOrder = () => {
-    console.log("Member data is Submitted");
+  const handlePlaceOrder = async () => {
+    const { id, ...restFormikValues } = formik.values;
+    try {
+      if (id) {
+        const updateParams = { ...restFormikValues };
+        await updateMember(id, updateParams);
+      } else {
+        const createParams = { ...restFormikValues };
+        await createMember(createParams);
+      }
+      formik.handleSubmit();
+      loadMemberData();
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      formik.handleReset(null);
+      console.log("Member data is Submitted", formik.values);
+    } catch (error: unknown) {
+      if (error instanceof APIErrorResponse) {
+        console.error(error.message);
+      }
+      return [];
+    }
+  };
+
+  const deleteMemberData = async (memberId: string) => {
+    try {
+      await deleteMember(memberId);
+      const updatedMember = memberDetails.data.filter(
+        (member: { id: string }) => member.id !== memberId
+      );
+      setMemberDetails({ ...memberDetails, data: updatedMember });
+    } catch (error) {
+      console.error("Error deleting plan:", error);
+    }
   };
 
   return (
@@ -539,6 +601,19 @@ const AddMember = () => {
               >
                 {activeStep === steps.length - 1 ? "Submit Details" : "Next"}
               </Button>
+
+              {/* <Button
+                variant="contained"
+                onClick={async () => {
+                  await formik.handleSubmit();
+                  if (activeStep !== steps.length - 1) {
+                    nextPageHandler();
+                  }
+                }}
+                sx={{ ml: 1 }}
+              >
+                {activeStep === steps.length - 1 ? "Submit Details" : "Next"}
+              </Button> */}
             </Box>
           </React.Fragment>
         )}
@@ -548,3 +623,4 @@ const AddMember = () => {
 };
 
 export default AddMember;
+

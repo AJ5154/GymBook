@@ -1,0 +1,41 @@
+export type CreateMemberDto = {
+    firstName: string;
+    lastName: string;
+    mobile: string;
+    countryShortCode: string;
+    countryCode: string;
+    dateOfJoing: string;
+    planId: string;
+    batchId: string;
+    startDate: string;
+    trainingType: string;
+    admissionFees: number;
+    discount: number;
+    discountType: string;
+    gender: string;
+    email: string;
+    dob: string;
+    address: string;
+    notes: string;
+};
+
+export type UpdateMemberDto = {
+    firstName: string;
+    lastName: string;
+    mobile: string;
+    countryShortCode: string;
+    countryCode: string;
+    dateOfJoing: string;
+    planId: string;
+    batchId: string;
+    startDate: string;
+    trainingType: string;
+    admissionFees: number;
+    discount: number;
+    discountType: string;
+    gender: string;
+    email: string;
+    dob: string;
+    address: string;
+    notes: string;
+};
